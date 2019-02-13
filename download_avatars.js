@@ -6,7 +6,6 @@ console.log('Welcome to the GitHub Avatar Downloader!');
 var repoOwner = process.argv[2];
 var repoName = process.argv[3];
 
-
 function getRepoContributors(repoOwner, repoName, cb) {
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
@@ -20,14 +19,16 @@ function getRepoContributors(repoOwner, repoName, cb) {
     cb(err, body);
   });
 }
-
-getRepoContributors(repoOwner, repoName, function(err, resultString) {
-  // console.log("Errors:", err);
-  const results = JSON.parse(resultString);
-  for (var i = 0; i < results.length; i++) {
-    downloadImageByURL(results[i].avatar_url, `./avatars/${results[i].id}.jpg`)
-  }
-});
+if (!repoOwner && !repoName) {
+  console.error("error, type in proper repos")
+}  else {
+  getRepoContributors(repoOwner, repoName, function(err, resultString) {
+    const results = JSON.parse(resultString);
+    for (var i = 0; i < results.length; i++) {
+      downloadImageByURL(results[i].avatar_url, `./avatars/${results[i].id}.jpg`)
+    }
+  });
+}
 
 function downloadImageByURL(url, filePath) {
   request.get(url)
